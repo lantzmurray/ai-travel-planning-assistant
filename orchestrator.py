@@ -20,6 +20,8 @@ AGENT_SEQUENCE = (
 )
 
 
+import concurrent.futures
+
 class Orchestrator:
     """Coordinate the trip-planning specialists in a simple fixed pipeline."""
 
@@ -40,7 +42,13 @@ class Orchestrator:
             {"kind": "input"},
         )
 
-        for agent_name, agent_runner in AGENT_SEQUENCE:
-            results[agent_name] = agent_runner(session_id, inputs)
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future_to_agent = {
+                executor.submit(agent_runner, session_id, inputs): agent_name
+                for agent_name, agent_runner in AGENT_SEQUENCE
+            }
+            for future in concurrent.futures.as_completed(future_to_agent):
+                agent_name = future_to_agent[future]
+                results[agent_name] = future.result()
 
         return {"session_id": session_id, "results": results}

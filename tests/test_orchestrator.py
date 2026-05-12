@@ -55,9 +55,9 @@ class OrchestratorWorkflowTests(TestCase):
 
 
 class PackingListAgentTests(TestCase):
-    """Verify the merged agent is wired through the shared runtime helper."""
+    """Verify the merged agent is wired through the shared base helper."""
 
-    def test_generate_packing_list_uses_runtime_helper(self) -> None:
+    def test_generate_packing_list_uses_shared_base_helper(self) -> None:
         context = {
             "destination": "Kyoto, Japan",
             "travel_dates": "Late November",
